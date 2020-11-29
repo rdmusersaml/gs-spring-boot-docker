@@ -16,6 +16,9 @@ COPY ${JAR_FILE} app.jar
 RUN mkdir /opt/cdbg && \
      wget -qO- https://storage.googleapis.com/cloud-debugger/compute-java/debian-wheezy/cdbg_java_agent_gce.tar.gz | \
      tar xvz -C /opt/cdbg
+RUN mkdir -p /opt/cprof && \
+  wget -q -O- https://storage.googleapis.com/cloud-profiler/java/latest/profiler_java_agent.tar.gz \
+  | tar xzv -C /opt/cprof
 # https://stackoverflow.com/questions/64291139/run-java-program-and-shell-script-on-entrypoint-in-dockerfile
 # https://stackoverflow.com/questions/53827877/how-can-i-run-multiple-jars-in-dockerfile
 ## https://docs.docker.com/config/containers/multi-service_container/
@@ -25,7 +28,7 @@ RUN mkdir /opt/cdbg && \
 #     -Dcom.google.cdbg.breakpoints.enable_canary=true \
 #     -jar /app.jar
 # ENTRYPOINT ["java","-jar","/app.jar"]
-ENTRYPOINT ["java", "-agentpath:/opt/cdbg/cdbg_java_agent.so", "-Dcom.google.cdbg.module=gs-spring-boot-docker", "-Dcom.google.cdbg.version=0.1.0", "-Dcom.google.cdbg.breakpoints.enable_canary=true","-jar","/app.jar"]
+ENTRYPOINT ["java", "-agentpath:/opt/cdbg/cdbg_java_agent.so", "-Dcom.google.cdbg.module=gs-spring-boot-docker", "-Dcom.google.cdbg.version=0.1.0", "-Dcom.google.cdbg.breakpoints.enable_canary=false", "-agentpath:/opt/cprof/profiler_java_agent.so=-cprof_service=gs-spring-boot-docker, -cprof_service_version=0.1.0","-jar","/app.jar"]
 #
 # FROM openjdk:8
 # #RUN addgroup -S spring && adduser -S spring -G spring
