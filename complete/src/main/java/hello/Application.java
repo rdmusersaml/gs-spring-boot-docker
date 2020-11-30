@@ -11,6 +11,8 @@ public class Application {
 
 	@RequestMapping("/")
 	public String home() {
+		String stingtest = "stringtesting";
+//		System.out.println( stingtest + " printing output");
 		return "Hello Docker World";
 	}
 
